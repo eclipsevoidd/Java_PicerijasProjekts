@@ -28,6 +28,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -56,6 +57,9 @@ public class PicerijasDarbinieks {
     static String[] dzerieniPath = {"", "atteli/pepsi.png", "atteli/coke.png", "atteli/fanta.png", "atteli/sprite.png"};
     static ImageIcon[] dzerieniBildes;
     
+    static String[] uzkodasPath = {"", "atteli/fries.png", "atteli/onion.png", "atteli/nuggets.png"};
+    static ImageIcon[] uzkodasBildes;
+    
     static String[] izmeri = {"20cm ⌀", "30cm ⌀", "45cm ⌀"};
    
     static JScrollPane ritinamaZona;
@@ -68,11 +72,19 @@ public class PicerijasDarbinieks {
             Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
             picasBildes[i] = new ImageIcon(img);
         }
+        
         dzerieniBildes = new ImageIcon[dzerieniPath.length];
         for (int i = 0; i < dzerieniPath.length; i++) {
         	ImageIcon icon = new ImageIcon(dzerieniPath[i]);
         	Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
         	dzerieniBildes[i] = new ImageIcon(img);
+        }
+        
+        uzkodasBildes = new ImageIcon[uzkodasPath.length];
+        for (int i = 0; i < uzkodasPath.length; i++) {
+        	ImageIcon icon = new ImageIcon(uzkodasPath[i]);
+        	Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+        	uzkodasBildes[i] = new ImageIcon(img);
         }
     }
     
@@ -110,6 +122,7 @@ public class PicerijasDarbinieks {
     	    
     	    String[] picaVardi = {"Bez picas", "Salami – 5.99€", "Šķiņķa – 5.99€", "Vistas – 6.49€", "Ham & Mushroom – 6.99€", "Ināras Īpašā – 9.99€"};
     	    String[] dzerieniVardi = {"Bez dzēriena", "Pepsi 500ml – 1.49€", "Coca-Cola 500ml – 1.49€", "Fanta 500ml – 1.49€", "Sprite 500ml – 1.49€"};
+    	    String[] uzkodasVardi = {"Bez uzkodām", "Frī kartupeļi – 1.99€", "Sīpolu gredzeni – 2.59€", "Vistas nageti 8gab. – 3.19€"};
 
     	    JComboBox<String> picasCombo = new JComboBox<>(picasPath);
     	    picasCombo.setBounds(20, 60, 300, 50);
@@ -277,6 +290,73 @@ public class PicerijasDarbinieks {
     	    uzkodasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
     	    uzkodasTitle.setBounds(20, 425, 300, 30);
     	    saturaPanel.add(uzkodasTitle);
+    	    
+    	    JComboBox<String> uzkodasCombo = new JComboBox<>(uzkodasPath);
+    	    uzkodasCombo.setBounds(20, 455, 300, 50);
+
+    	    uzkodasCombo.setRenderer(new DefaultListCellRenderer() {
+    	        private static final long serialVersionUID = 1L;
+
+    	        @Override
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta no interneta!
+    	            
+    	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    	            
+    	            String filePath = (String) value;
+    	            int itemIndex = -1;
+    	            for(int i = 0; i < uzkodasPath.length; i++) {
+    	                if(uzkodasPath[i].equals(filePath)) {
+    	                    itemIndex = i;
+    	                    break;
+    	                }
+    	            }
+    	            
+    	            if (itemIndex != -1) {
+    	                label.setText(uzkodasVardi[itemIndex]);
+    	                label.setIcon(uzkodasBildes[itemIndex]);
+    	            }
+    	            
+    	            return label;
+    	        }
+    	    });
+    	    saturaPanel.add(uzkodasCombo);
+    	    
+    	    JLabel vardaTitle = new JLabel("Ievadi savu vārdu:");
+    	    vardaTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    vardaTitle.setBounds(20, 510, 300, 30);
+    	    saturaPanel.add(vardaTitle);
+    	    
+    	    JTextField vardaLodzins = new JTextField();
+    	    vardaLodzins.setBounds(20, 545, 200, 30);
+    	    saturaPanel.add(vardaLodzins);
+    	    
+    	    JCheckBox piegadeOption = new JCheckBox("Piegādāt uz mājām?");
+    	    piegadeOption.setBounds(20, 575, 135, 50);
+    	    saturaPanel.add(piegadeOption);
+    	    
+    	    JLabel talrunisTitle = new JLabel("Ievadi savu tālruņa numuru:");
+    	    talrunisTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    talrunisTitle.setBounds(20, 615, 300, 30);
+    	    saturaPanel.add(talrunisTitle);
+    	    
+    	    JTextField talrunisLodzins = new JTextField();
+    	    talrunisLodzins.setBounds(20, 650, 200, 30);
+    	    talrunisLodzins.setEnabled(false);
+    	    saturaPanel.add(talrunisLodzins);
+    	    
+    	    JLabel adreseTitle = new JLabel("Ievadi savu adresi:");
+    	    adreseTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    adreseTitle.setBounds(20, 685, 300, 30);
+    	    saturaPanel.add(adreseTitle);
+    	    
+    	    JTextField adreseLodzins = new JTextField();
+    	    adreseLodzins.setBounds(20, 720, 200, 30);
+    	    adreseLodzins.setEnabled(false);
+    	    saturaPanel.add(adreseLodzins);
+    	    
+    	    JButton noformetPasutijumu = new JButton("Noformēt pasūtījumu");
+    	    noformetPasutijumu.setBounds(400, 800, 175, 40);
+    	    saturaPanel.add(noformetPasutijumu);
     	    
     	    break;
     	case "apskatit":
