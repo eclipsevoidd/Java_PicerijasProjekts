@@ -42,21 +42,22 @@ public class PicerijasDarbinieks {
     
     static JPanel saturaPanel;
     
+    static String[] picas = {"atteli/salami.png", "atteli/skinka.png", "atteli/vistas.png", "atteli/hamMushroom.png", "atteli/inarasIpasa.png"};
+    
     static JScrollPane ritinamaZona;
     
     public static void atjaunotPanelaIzmeru(JPanel panelis) {
         int maxBottom = 0;
         
-        for (Component comp : panelis.getComponents()) {
-            int elementaApaksa = comp.getY() + comp.getHeight();
+        for (Component komp : panelis.getComponents()) {
+            int elementaApaksa = komp.getY() + komp.getHeight();
             
             if (elementaApaksa > maxBottom) {
                 maxBottom = elementaApaksa;
             }
         }
         panelis.setPreferredSize(new Dimension(panelis.getWidth(), maxBottom + 20));
-        
-        // Tell the scroll pane to update its bars
+        // atjauno scroll bar
         panelis.revalidate();
         panelis.repaint();
     }
@@ -65,21 +66,18 @@ public class PicerijasDarbinieks {
     	// piekļust jpanel lodziņam, kurš saturēs elementus tajā
         saturaPanel = (JPanel) ritinamaZona.getViewport().getView();
         
+        saturaPanel.removeAll();
+        saturaPanel.revalidate();
+        saturaPanel.repaint();
+        
     	switch(nosaukums) {
     	case "registret":
-    		for (int i = 0; i < 20; i++) {
-    			JLabel pasutijumsTitle = new JLabel("pizza!");
-                pasutijumsTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
-                pasutijumsTitle.setBounds(20, (10 + 35) * i, 300, 30);
-                saturaPanel.add(pasutijumsTitle);
-                
-                ImageIcon picaImg = new ImageIcon("atteli/pica.png");
-                JLabel pica = new JLabel(picaImg);
-                pica.setBounds(0, 42 * i, 32, 32);
-                saturaPanel.add(pica);
-                
-    		}
-    		
+    		JLabel picasTitle = new JLabel("Picas");
+            picasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+            picasTitle.setBounds(20, 20, 300, 30);
+            saturaPanel.add(picasTitle);
+            
+            // here
     		break;
     	case "apskatit":
     		
@@ -142,6 +140,8 @@ public class PicerijasDarbinieks {
 			public void actionPerformed(ActionEvent e) {
 				setElementi("registret");
 				registretPoga.setEnabled(false);
+				apskatitPoga.setEnabled(true);
+				vesturePoga.setEnabled(true);
 			}
         });
         
@@ -151,11 +151,31 @@ public class PicerijasDarbinieks {
         apskatitPoga.setFont(new Font("Franklin Gothic Medium", Font.BOLD, 25));
         apskatitPoga.setBounds(70, 255, 250, 50);
         
+        apskatitPoga.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setElementi("apskatit");
+				registretPoga.setEnabled(true);
+				apskatitPoga.setEnabled(false);
+				vesturePoga.setEnabled(true);
+			}
+        });
+        
         vesturePoga = new JButton("Pasūtījumu vēsture");
         vesturePoga.setName("vesture");
 		vesturePoga.setFocusPainted(false);
         vesturePoga.setFont(new Font("Franklin Gothic Medium", Font.BOLD, 25));
         vesturePoga.setBounds(70, 310, 250, 50);
+        
+        vesturePoga.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setElementi("vesture");
+				registretPoga.setEnabled(true);
+				apskatitPoga.setEnabled(true);
+				vesturePoga.setEnabled(false);
+			}
+        });
         
         exitPoga = new JButton("Iziet");
         exitPoga.setName("iziet");
