@@ -10,12 +10,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,8 +50,11 @@ public class PicerijasDarbinieks {
     
     static JPanel saturaPanel;
     
-    static String[] picas = {"", "atteli/salami.png", "atteli/skinka.png", "atteli/vistas.png", "atteli/hamMushroom.png", "atteli/inarasIpasa.png"};
+    static String[] picasPath = {"", "atteli/salami.png", "atteli/skinka.png", "atteli/vistas.png", "atteli/hamMushroom.png", "atteli/inarasIpasa.png"};
     static ImageIcon[] picasBildes; // bildes tiek ielādētas startupā
+    
+    static String[] dzerieniPath = {"", "atteli/pepsi.png", "atteli/coke.png", "atteli/fanta.png", "atteli/sprite.png"};
+    static ImageIcon[] dzerieniBildes;
     
     static String[] izmeri = {"20cm ⌀", "30cm ⌀", "45cm ⌀"};
    
@@ -59,11 +62,17 @@ public class PicerijasDarbinieks {
     
     // sariktē bildes pēc izmēriem sākumā
     public static void loadImages() {
-        picasBildes = new ImageIcon[picas.length];
-        for (int i = 0; i < picas.length; i++) {
-            ImageIcon icon = new ImageIcon(picas[i]);
+        picasBildes = new ImageIcon[picasPath.length];
+        for (int i = 0; i < picasPath.length; i++) {
+            ImageIcon icon = new ImageIcon(picasPath[i]);
             Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
             picasBildes[i] = new ImageIcon(img);
+        }
+        dzerieniBildes = new ImageIcon[dzerieniPath.length];
+        for (int i = 0; i < dzerieniPath.length; i++) {
+        	ImageIcon icon = new ImageIcon(dzerieniPath[i]);
+        	Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+        	dzerieniBildes[i] = new ImageIcon(img);
         }
     }
     
@@ -100,22 +109,23 @@ public class PicerijasDarbinieks {
     	    saturaPanel.add(picasTitle);
     	    
     	    String[] picaVardi = {"Bez picas", "Salami – 5.99€", "Šķiņķa – 5.99€", "Vistas – 6.49€", "Ham & Mushroom – 6.99€", "Ināras Īpašā – 9.99€"};
+    	    String[] dzerieniVardi = {"Bez dzēriena", "Pepsi 500ml – 1.49€", "Coca-Cola 500ml – 1.49€", "Fanta 500ml – 1.49€", "Sprite 500ml – 1.49€"};
 
-    	    JComboBox<String> picasCombo = new JComboBox<>(picas);
+    	    JComboBox<String> picasCombo = new JComboBox<>(picasPath);
     	    picasCombo.setBounds(20, 60, 300, 50);
 
     	    picasCombo.setRenderer(new DefaultListCellRenderer() {
     	        private static final long serialVersionUID = 1L;
 
     	        @Override
-    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta 	1no interneta!
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta no interneta!
     	            
     	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     	            
     	            String filePath = (String) value;
     	            int itemIndex = -1;
-    	            for(int i=0; i<picas.length; i++) {
-    	                if(picas[i].equals(filePath)) {
+    	            for(int i=0; i<picasPath.length; i++) {
+    	                if(picasPath[i].equals(filePath)) {
     	                    itemIndex = i;
     	                    break;
     	                }
@@ -167,33 +177,39 @@ public class PicerijasDarbinieks {
     	    piedevasTitle.setBounds(20, 265, 300, 30);
     	    saturaPanel.add(piedevasTitle);
     	    
-    	    ButtonGroup piedevas = new ButtonGroup();
+    	    java.util.List<JCheckBox> piedevas = new ArrayList<>(); // netisam importēju java.awt.list, kas nestrādā ar datu struktūras tipa definēšanu (JCheckBox), tpc tagad jāspecificē java.util. pirms
     	    
     	    JCheckBox siersPiedeva = new JCheckBox("Siers – 1€");
     	    siersPiedeva.setEnabled(false);
-    	    siersPiedeva.setBounds(20, 285, 100, 50);
+    	    siersPiedeva.setBounds(20, 285, 80, 50);
     	    
     	    JCheckBox tomatiPiedeva = new JCheckBox("Tomāti – 0.50€");
     	    tomatiPiedeva.setEnabled(false);
-    	    tomatiPiedeva.setBounds(120, 285, 120, 50);
+    	    tomatiPiedeva.setBounds(120, 285, 110, 50);
     	    
     	    JCheckBox senesPiedeva = new JCheckBox("Sēnes – 1€");
     	    senesPiedeva.setEnabled(false);
-    	    senesPiedeva.setBounds(240, 285, 120, 50);
+    	    senesPiedeva.setBounds(240, 285, 90, 50);
     	    
     	    JCheckBox gurkiPiedeva = new JCheckBox("Gurķi – 0.70€");
     	    gurkiPiedeva.setEnabled(false);
-    	    gurkiPiedeva.setBounds(340, 285, 120, 50);
+    	    gurkiPiedeva.setBounds(340, 285, 100, 50);
+    	    
+    	    JCheckBox paprikaPiedeva = new JCheckBox("Paprika – 1.50€");
+    	    paprikaPiedeva.setEnabled(false);
+    	    paprikaPiedeva.setBounds(460, 285, 120, 50);
     	    
     	    piedevas.add(siersPiedeva);
     	    piedevas.add(tomatiPiedeva);
     	    piedevas.add(senesPiedeva);
     	    piedevas.add(gurkiPiedeva);
+    	    piedevas.add(paprikaPiedeva);
     	    
     	    saturaPanel.add(siersPiedeva);
     	    saturaPanel.add(tomatiPiedeva);
     	    saturaPanel.add(senesPiedeva);
     	    saturaPanel.add(gurkiPiedeva);
+    	    saturaPanel.add(paprikaPiedeva);
     	    
     	    picasCombo.addActionListener(new ActionListener() {
     	        @Override
@@ -202,16 +218,65 @@ public class PicerijasDarbinieks {
     	                picasIzmeri.setEnabled(true);
     	                garozaParasta.setEnabled(true);
     	                garozaPilngraudu.setEnabled(true);
+    	                
+    	                siersPiedeva.setEnabled(true);
+    	                tomatiPiedeva.setEnabled(true);
+    	                senesPiedeva.setEnabled(true);
+    	                gurkiPiedeva.setEnabled(true);
+    	                paprikaPiedeva.setEnabled(true);
     	            } else {
     	                picasIzmeri.setEnabled(false);
     	                garozaParasta.setEnabled(false);
     	                garozaPilngraudu.setEnabled(false);
     	                
+    	                siersPiedeva.setEnabled(false);
+    	                tomatiPiedeva.setEnabled(false);
+    	                senesPiedeva.setEnabled(false);
+    	                gurkiPiedeva.setEnabled(false);
+    	                paprikaPiedeva.setEnabled(false);
     	            }
     	        }
     	    });
     	    
+    	    JLabel dzerieniTitle = new JLabel("Izvēlies dzērienu:");
+    	    dzerieniTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    dzerieniTitle.setBounds(20, 330, 300, 30);
+    	    saturaPanel.add(dzerieniTitle);
     	    
+    	    JComboBox<String> dzerieniCombo = new JComboBox<>(dzerieniPath);
+    	    dzerieniCombo.setBounds(20, 360, 300, 50);
+
+    	    dzerieniCombo.setRenderer(new DefaultListCellRenderer() {
+    	        private static final long serialVersionUID = 1L;
+
+    	        @Override
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta no interneta!
+    	            
+    	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    	            
+    	            String filePath = (String) value;
+    	            int itemIndex = -1;
+    	            for(int i = 0; i < dzerieniPath.length; i++) {
+    	                if(dzerieniPath[i].equals(filePath)) {
+    	                    itemIndex = i;
+    	                    break;
+    	                }
+    	            }
+    	            
+    	            if (itemIndex != -1) {
+    	                label.setText(dzerieniVardi[itemIndex]);
+    	                label.setIcon(dzerieniBildes[itemIndex]);
+    	            }
+    	            
+    	            return label;
+    	        }
+    	    });
+    	    saturaPanel.add(dzerieniCombo);
+    	    
+    	    JLabel uzkodasTitle = new JLabel("Izvēlies uzkodas:");
+    	    uzkodasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    uzkodasTitle.setBounds(20, 425, 300, 30);
+    	    saturaPanel.add(uzkodasTitle);
     	    
     	    break;
     	case "apskatit":
@@ -252,6 +317,7 @@ public class PicerijasDarbinieks {
 		logs.setLocationRelativeTo(null);
 		logs.setDefaultCloseOperation(3);
 		logs.setResizable(false);
+		logs.setIconImage(new ImageIcon("atteli/icon.png").getImage().getScaledInstance(-1, -1, Image.SCALE_SMOOTH));
 		
 		ImageIcon bg = new ImageIcon("atteli/bg.png");
 		int bildeWidth = bg.getIconWidth();
@@ -361,6 +427,7 @@ public class PicerijasDarbinieks {
         bground.add(apskatitPoga);
         bground.add(vesturePoga);
         bground.add(exitPoga);
+        
         bground.add(bgBlock2);
         bground.add(teksts);
         bground.add(bgBlock);
