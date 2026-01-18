@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -13,11 +14,14 @@ import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -42,9 +46,20 @@ public class PicerijasDarbinieks {
     
     static JPanel saturaPanel;
     
-    static String[] picas = {"atteli/salami.png", "atteli/skinka.png", "atteli/vistas.png", "atteli/hamMushroom.png", "atteli/inarasIpasa.png"};
+    static String[] picas = {"", "atteli/salami.png", "atteli/skinka.png", "atteli/vistas.png", "atteli/hamMushroom.png", "atteli/inarasIpasa.png"};
+    static ImageIcon[] picasIcons; // bildes tiek ielādētas startupā
     
     static JScrollPane ritinamaZona;
+    
+    // sariktē bildes pēc izmēriem sākumā
+    public static void loadImages() {
+        picasIcons = new ImageIcon[picas.length];
+        for (int i = 0; i < picas.length; i++) {
+            ImageIcon icon = new ImageIcon(picas[i]);
+            Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+            picasIcons[i] = new ImageIcon(img);
+        }
+    }
     
     public static void atjaunotPanelaIzmeru(JPanel panelis) {
         int maxBottom = 0;
@@ -72,13 +87,45 @@ public class PicerijasDarbinieks {
         
     	switch(nosaukums) {
     	case "registret":
-    		JLabel picasTitle = new JLabel("Picas");
-            picasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
-            picasTitle.setBounds(20, 20, 300, 30);
-            saturaPanel.add(picasTitle);
-            
-            // here
-    		break;
+    	    JLabel picasTitle = new JLabel("Izvēlies picu:");
+    	    picasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    picasTitle.setBounds(20, 20, 300, 50);
+    	    saturaPanel.add(picasTitle);
+    	    
+    	    String[] pizzaNames = {"Bez picas", "Salami", "Šķiņķa", "Vistas", "Ham & Mushroom", "Ināras Īpašā"};
+
+    	    JComboBox<String> picasCombo = new JComboBox<>(picas);
+    	    picasCombo.setBounds(20, 60, 300, 50);
+
+    	    picasCombo.setRenderer(new DefaultListCellRenderer() {
+    	        private static final long serialVersionUID = 1L;
+
+    	        @Override
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, 
+    	                int index, boolean isSelected, boolean cellHasFocus) {
+    	            
+    	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    	            
+    	            String filePath = (String) value;
+    	            int itemIndex = -1;
+    	            for(int i=0; i<picas.length; i++) {
+    	                if(picas[i].equals(filePath)) {
+    	                    itemIndex = i;
+    	                    break;
+    	                }
+    	            }
+    	            
+    	            if (itemIndex != -1) {
+    	                label.setText(pizzaNames[itemIndex]);
+    	                label.setIcon(picasIcons[itemIndex]); // Use preloaded icon
+    	            }
+    	            
+    	            return label;
+    	        }
+    	    });
+
+    	    saturaPanel.add(picasCombo);
+    	    break;
     	case "apskatit":
     		
     		break;
@@ -108,6 +155,9 @@ public class PicerijasDarbinieks {
 	public static void main(String[] args) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {	
 		
 		UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		
+		// Load and scale images once at startup
+		loadImages();
 		
 		logs = new JFrame("Picērija");
 		logs.setSize(1024, 768);
