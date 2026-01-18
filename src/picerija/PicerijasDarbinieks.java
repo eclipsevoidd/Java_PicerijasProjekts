@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 import javax.swing.AbstractAction;
@@ -40,9 +42,27 @@ public class PicerijasDarbinieks {
 	static JFrame logs;
 	static Random rand = new Random();
 	
+	static Queue<Pasutijums> pasutijumi = new LinkedList<Pasutijums>();
+	
 	static int x1 = 0;
     static int x2;
     static int atrums = 2;
+    static int ID = 0;
+    static int izmers;
+    
+    static boolean piegade;
+    
+    static java.util.List<JCheckBox> piedevas = new ArrayList<>();
+    
+    static String picasVeids;
+    static String garoza;
+    static String dzeriens;
+    static String uzkoda;
+    static String vards;
+    static String talrNr;
+    static String adrese;
+    
+    static double cena;
     
     static JButton registretPoga;
     static JButton apskatitPoga;
@@ -105,6 +125,7 @@ public class PicerijasDarbinieks {
     }
     
     static void setElementi(String nosaukums) {
+    	
     	// piekļust jpanel lodziņam, kurš saturēs elementus tajā
         saturaPanel = (JPanel) ritinamaZona.getViewport().getView();
         
@@ -114,7 +135,6 @@ public class PicerijasDarbinieks {
         
     	switch(nosaukums) {
     	case "registret":
-    		
     	    JLabel picasTitle = new JLabel("Izvēlies picu:");
     	    picasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
     	    picasTitle.setBounds(20, 20, 300, 50);
@@ -189,8 +209,6 @@ public class PicerijasDarbinieks {
     	    piedevasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
     	    piedevasTitle.setBounds(20, 265, 300, 30);
     	    saturaPanel.add(piedevasTitle);
-    	    
-    	    java.util.List<JCheckBox> piedevas = new ArrayList<>(); // netisam importēju java.awt.list, kas nestrādā ar datu struktūras tipa definēšanu (JCheckBox), tpc tagad jāspecificē java.util. pirms
     	    
     	    JCheckBox siersPiedeva = new JCheckBox("Siers – 1€");
     	    siersPiedeva.setEnabled(false);
@@ -358,6 +376,76 @@ public class PicerijasDarbinieks {
     	    noformetPasutijumu.setBounds(400, 800, 175, 40);
     	    saturaPanel.add(noformetPasutijumu);
     	    
+    	    piegadeOption.addActionListener(new ActionListener() {
+    	        @Override
+    	        public void actionPerformed(ActionEvent e) {
+    	            if (piegadeOption.isSelected()) {
+    	            	talrunisLodzins.setEnabled(true);
+    	            	adreseLodzins.setEnabled(true);
+    	            } else {
+    	            	talrunisLodzins.setEnabled(false);
+    	            	talrunisLodzins.setText("");
+    	            	adreseLodzins.setEnabled(false);
+    	            	adreseLodzins.setText("");
+    	            }
+    	        }
+    	    });
+    	    
+    	    noformetPasutijumu.addActionListener(new ActionListener() { // "Noformēt Pasūtījumu" uzspiešana
+    	    	@Override
+    	        public void actionPerformed(ActionEvent e) {
+    	    		ID++;
+    	    		picasVeids = picasCombo.getSelectedItem().toString();
+    	    		
+    	    		switch(picasCombo.getSelectedIndex()) {
+    	    		case 1:
+    	    			cena += 5.99;
+    	    			break;
+    	    		case 2:
+    	    			cena += 5.99;
+    	    			break;
+    	    		case 3:
+    	    			cena += 6.49;
+    	    			break;
+    	    		case 4:
+    	    			cena += 6.99;
+    	    			break;
+    	    		case 5:
+    	    			cena += 9.99;
+    	    			break;
+    	    		}
+    	    		
+    	    		switch(picasIzmeri.getSelectedIndex()) {
+    	    		case 0:
+    	    			izmers = 20;
+    	    			break;
+    	    		case 1:
+    	    			izmers = 30;
+    	    			cena += 2;
+    	    			break;
+    	    		case 2:
+    	    			izmers = 45;
+    	    			cena += 5;
+    	    			break;
+					default:
+						break;
+    	    		}
+    	    		
+    	    		if (picasCombo.getSelectedIndex() != 0) {
+    	    			if (garozaPilngraudu.isSelected()) {
+    	    				PicerijasDarbinieks.garoza = "Pilngraudu";
+    	    				cena += 0.50;
+    	    			} else {
+    	    				PicerijasDarbinieks.garoza = "Parastā";
+    	    			}
+    	    		}
+    	    		
+    	    		//pasutijumi.add(new Pasutijums(ID, picasVeids, izmers, PicerijasDarbinieks.garoza));
+    	    		noformetPasutijumu.setEnabled(false);
+    	        }
+    	    	
+    	    });
+    	    
     	    break;
     	case "apskatit":
     		
@@ -389,7 +477,6 @@ public class PicerijasDarbinieks {
 		
 		UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		
-		// Load and scale images once at startup
 		loadImages();
 		
 		logs = new JFrame("Picērija");
