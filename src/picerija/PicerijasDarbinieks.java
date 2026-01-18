@@ -14,15 +14,19 @@ import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -47,17 +51,19 @@ public class PicerijasDarbinieks {
     static JPanel saturaPanel;
     
     static String[] picas = {"", "atteli/salami.png", "atteli/skinka.png", "atteli/vistas.png", "atteli/hamMushroom.png", "atteli/inarasIpasa.png"};
-    static ImageIcon[] picasIcons; // bildes tiek ielādētas startupā
+    static ImageIcon[] picasBildes; // bildes tiek ielādētas startupā
     
+    static String[] izmeri = {"20cm ⌀", "30cm ⌀", "45cm ⌀"};
+   
     static JScrollPane ritinamaZona;
     
     // sariktē bildes pēc izmēriem sākumā
     public static void loadImages() {
-        picasIcons = new ImageIcon[picas.length];
+        picasBildes = new ImageIcon[picas.length];
         for (int i = 0; i < picas.length; i++) {
             ImageIcon icon = new ImageIcon(picas[i]);
             Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
-            picasIcons[i] = new ImageIcon(img);
+            picasBildes[i] = new ImageIcon(img);
         }
     }
     
@@ -87,12 +93,13 @@ public class PicerijasDarbinieks {
         
     	switch(nosaukums) {
     	case "registret":
+    		
     	    JLabel picasTitle = new JLabel("Izvēlies picu:");
     	    picasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
     	    picasTitle.setBounds(20, 20, 300, 50);
     	    saturaPanel.add(picasTitle);
     	    
-    	    String[] pizzaNames = {"Bez picas", "Salami", "Šķiņķa", "Vistas", "Ham & Mushroom", "Ināras Īpašā"};
+    	    String[] picaVardi = {"Bez picas", "Salami – 5.99€", "Šķiņķa – 5.99€", "Vistas – 6.49€", "Ham & Mushroom – 6.99€", "Ināras Īpašā – 9.99€"};
 
     	    JComboBox<String> picasCombo = new JComboBox<>(picas);
     	    picasCombo.setBounds(20, 60, 300, 50);
@@ -101,8 +108,7 @@ public class PicerijasDarbinieks {
     	        private static final long serialVersionUID = 1L;
 
     	        @Override
-    	        public Component getListCellRendererComponent(JList<?> list, Object value, 
-    	                int index, boolean isSelected, boolean cellHasFocus) {
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta 	1no interneta!
     	            
     	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     	            
@@ -116,15 +122,97 @@ public class PicerijasDarbinieks {
     	            }
     	            
     	            if (itemIndex != -1) {
-    	                label.setText(pizzaNames[itemIndex]);
-    	                label.setIcon(picasIcons[itemIndex]); // Use preloaded icon
+    	                label.setText(picaVardi[itemIndex]);
+    	                label.setIcon(picasBildes[itemIndex]);
     	            }
     	            
     	            return label;
     	        }
     	    });
-
     	    saturaPanel.add(picasCombo);
+    	    
+    	    JLabel izmeriTitle = new JLabel("Izvēlies izmēru:");
+    	    izmeriTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    izmeriTitle.setBounds(20, 120, 300, 30);
+    	    saturaPanel.add(izmeriTitle);
+    	    
+    	    JComboBox<String> picasIzmeri = new JComboBox<>(izmeri);
+    	    picasIzmeri.setBounds(20, 150, 300, 30);
+    	    picasIzmeri.setEnabled(false);
+    	    saturaPanel.add(picasIzmeri);
+    	    
+    	    JLabel garozaTitle = new JLabel("Izvēlies garozas veidu:");
+    	    garozaTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    garozaTitle.setBounds(20, 200, 300, 30);
+    	    saturaPanel.add(garozaTitle);
+    	    
+    	    ButtonGroup garoza = new ButtonGroup();
+    	    
+    	    JRadioButton garozaParasta = new JRadioButton("Parasta");
+    	    garozaParasta.setEnabled(false);
+    	    garozaParasta.setBounds(20, 220, 70, 50);
+    	    
+    	    JRadioButton garozaPilngraudu = new JRadioButton("Pilngraudu – 0.50€");
+    	    garozaPilngraudu.setEnabled(false);
+    	    garozaPilngraudu.setBounds(100, 220, 125, 50);
+    	    
+    	    garoza.add(garozaParasta);
+    	    garoza.add(garozaPilngraudu);
+    	    
+    	    saturaPanel.add(garozaParasta);
+    	    saturaPanel.add(garozaPilngraudu);
+    	    
+    	    JLabel piedevasTitle = new JLabel("Izvēlies picas piedevas:");
+    	    piedevasTitle.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 18));
+    	    piedevasTitle.setBounds(20, 265, 300, 30);
+    	    saturaPanel.add(piedevasTitle);
+    	    
+    	    ButtonGroup piedevas = new ButtonGroup();
+    	    
+    	    JCheckBox siersPiedeva = new JCheckBox("Siers – 1€");
+    	    siersPiedeva.setEnabled(false);
+    	    siersPiedeva.setBounds(20, 285, 100, 50);
+    	    
+    	    JCheckBox tomatiPiedeva = new JCheckBox("Tomāti – 0.50€");
+    	    tomatiPiedeva.setEnabled(false);
+    	    tomatiPiedeva.setBounds(120, 285, 120, 50);
+    	    
+    	    JCheckBox senesPiedeva = new JCheckBox("Sēnes – 1€");
+    	    senesPiedeva.setEnabled(false);
+    	    senesPiedeva.setBounds(240, 285, 120, 50);
+    	    
+    	    JCheckBox gurkiPiedeva = new JCheckBox("Gurķi – 0.70€");
+    	    gurkiPiedeva.setEnabled(false);
+    	    gurkiPiedeva.setBounds(340, 285, 120, 50);
+    	    
+    	    piedevas.add(siersPiedeva);
+    	    piedevas.add(tomatiPiedeva);
+    	    piedevas.add(senesPiedeva);
+    	    piedevas.add(gurkiPiedeva);
+    	    
+    	    saturaPanel.add(siersPiedeva);
+    	    saturaPanel.add(tomatiPiedeva);
+    	    saturaPanel.add(senesPiedeva);
+    	    saturaPanel.add(gurkiPiedeva);
+    	    
+    	    picasCombo.addActionListener(new ActionListener() {
+    	        @Override
+    	        public void actionPerformed(ActionEvent e) {
+    	            if (picasCombo.getSelectedIndex() > 0) {
+    	                picasIzmeri.setEnabled(true);
+    	                garozaParasta.setEnabled(true);
+    	                garozaPilngraudu.setEnabled(true);
+    	            } else {
+    	                picasIzmeri.setEnabled(false);
+    	                garozaParasta.setEnabled(false);
+    	                garozaPilngraudu.setEnabled(false);
+    	                
+    	            }
+    	        }
+    	    });
+    	    
+    	    
+    	    
     	    break;
     	case "apskatit":
     		
