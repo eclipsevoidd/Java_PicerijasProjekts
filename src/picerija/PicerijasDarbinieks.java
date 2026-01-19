@@ -10,6 +10,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -39,6 +46,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public class PicerijasDarbinieks {
+	
+	static String failaNosaukums = "pasutijumi.txt";
+	
+	private static final DecimalFormat df = new DecimalFormat("0.00");
 	
 	static JFrame logs;
 	static Random rand = new Random();
@@ -108,6 +119,52 @@ public class PicerijasDarbinieks {
         	ImageIcon icon = new ImageIcon(uzkodasPath[i]);
         	Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
         	uzkodasBildes[i] = new ImageIcon(img);
+        }
+    }
+    
+    public static void saglabatPasutijumus() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(failaNosaukums))) {
+            for (Pasutijums p : pasutijumi) {
+                writer.println(p.getID() + "|" + p.getPicasVeids() + "|" + p.getIzmers() + "|" + 
+                              p.getGaroza() + "|" + p.getPicasPiedevas() + "|" + p.getDzeriens() + "|" + 
+                              p.getUzkoda() + "|" + p.getVards() + "|" + p.isPiegade() + "|" + 
+                              p.getTalrNr() + "|" + p.getAdrese() + "|" + p.getCena());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void ieladetPasutijumus() {
+        pasutijumi = new LinkedList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(failaNosaukums))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] pasutijumaDetalas = line.split("\n|");
+                if (pasutijumaDetalas.length == 12) {
+                    int id = Integer.parseInt(pasutijumaDetalas[0]);
+                    String picasVeids = pasutijumaDetalas[1];
+                    int izmers = Integer.parseInt(pasutijumaDetalas[2]);
+                    String garoza = pasutijumaDetalas[3];
+                    String piedevas = pasutijumaDetalas[4];
+                    String dzeriens = pasutijumaDetalas[5];
+                    String uzkoda = pasutijumaDetalas[6];
+                    String vards = pasutijumaDetalas[7];
+                    boolean piegade = Boolean.parseBoolean(pasutijumaDetalas[8]);
+                    String talrNr = pasutijumaDetalas[9];
+                    String adrese = pasutijumaDetalas[10];
+                    double cena = Double.parseDouble(pasutijumaDetalas[11]);
+                    
+                    pasutijumi.add(new Pasutijums(id, picasVeids, izmers, garoza, piedevas, dzeriens, uzkoda, vards, piegade, talrNr, adrese, cena));
+                    if (id > ID) {
+                    	ID = id;
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            pasutijumi = new LinkedList<>();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     
@@ -352,7 +409,7 @@ public class PicerijasDarbinieks {
     	    saturaPanel.add(vardaLodzins);
     	    
     	    JCheckBox piegadeOption = new JCheckBox("Piegādāt uz mājām? (+ 5.99€)");
-    	    piegadeOption.setBounds(20, 575, 135, 50);
+    	    piegadeOption.setBounds(20, 575, 190, 50);
     	    saturaPanel.add(piegadeOption);
     	    
     	    JLabel talrunisTitle = new JLabel("Ievadi savu tālruņa numuru:");
@@ -394,102 +451,168 @@ public class PicerijasDarbinieks {
     	        }
     	    });
     	    
-    	    noformetPasutijumu.addActionListener(new ActionListener() { // "Noformēt Pasūtījumu" uzspiešana
-    	    	@Override
+    	    noformetPasutijumu.addActionListener(new ActionListener() {
+    	        @Override
     	        public void actionPerformed(ActionEvent e) {
-    	    		ID++;
-    	    		picasVeids = picasCombo.getSelectedItem().toString();
-    	    		
-    	    		switch(picasCombo.getSelectedIndex()) {
-    	    		case 1:
-    	    			cena += 5.99;
-    	    			break;
-    	    		case 2:
-    	    			cena += 5.99;
-    	    			break;
-    	    		case 3:
-    	    			cena += 6.49;
-    	    			break;
-    	    		case 4:
-    	    			cena += 6.99;
-    	    			break;
-    	    		case 5:
-    	    			cena += 9.99;
-    	    			break;
-    	    		}
-    	    		
-    	    		switch(picasIzmeri.getSelectedIndex()) {
-    	    		case 0:
-    	    			izmers = 20;
-    	    			break;
-    	    		case 1:
-    	    			izmers = 30;
-    	    			cena += 2;
-    	    			break;
-    	    		case 2:
-    	    			izmers = 45;
-    	    			cena += 5;
-    	    			break;
-					default:
-						break;
-    	    		}
-    	    		
-    	    		if (picasCombo.getSelectedIndex() != 0) {
-    	    			if (garozaPilngraudu.isSelected()) {
-    	    				PicerijasDarbinieks.garoza = "Pilngraudu";
-    	    				cena += 0.50;
-    	    			} else {
-    	    				PicerijasDarbinieks.garoza = "Parastā";
-    	    			}
-    	    		}
-    	    		
-    	    		for (int i = 0; i < piedevas.size(); i++) {
-    	    			if (piedevas.get(i).isSelected()) {
-    	    				cena += 1.00;
-    	    				picasPiedevas += piedevasVardi[i] + ", ";
-    	    			}
-    	    		}
-    	    		
-    	    		dzeriens = dzerieniCombo.getSelectedItem().toString();
-    	    		if (dzerieniCombo.getSelectedIndex() != 0) {
-    	    			cena += 1.49;
-    	    		}
-    	    		
-    	    		uzkoda = uzkodasCombo.getSelectedItem().toString();
-    	    		
-    	    		switch(uzkodasCombo.getSelectedIndex()) {
-    	    		case 1:
-    	    			cena += 1.99;
-    	    		case 2:
-    	    			cena += 2.59;
-    	    		case 3:
-    	    			cena += 3.19;
-    	    		}
-    	    		
-    	    		vards = vardaLodzins.getText();
-    	    		
-    	    		piegade = piegadeOption.isSelected();
-    	    		if (piegadeOption.isSelected()) {
-    	    			cena += 5.99;
-    	    		}
-    	    		
-    	    		talrNr = talrunisLodzins.getText();
-    	    		
-    	    		adrese = adreseLodzins.getText();
-    	    		
-    	    		pasutijumi.add(new Pasutijums(ID, picasVeids, izmers, PicerijasDarbinieks.garoza, picasPiedevas, dzeriens, uzkoda, vards, piegade, talrNr, adrese, cena));
-    	    		noformetPasutijumu.setEnabled(false);
-    	    		apskatitPoga.setEnabled(false);
-    	    		registretPoga.setEnabled(true);
-    	    		setElementi("pasutijumi");
+    	            ID++;
+    	            
+    	            switch(picasCombo.getSelectedIndex()) {
+    	            case 0:
+    	                picasVeids = "Bez picas";
+    	                break;
+    	            case 1:
+    	                picasVeids = "Salami";
+    	                cena += 5.99;
+    	                break;
+    	            case 2:
+    	                picasVeids = "Šķiņķa";
+    	                cena += 5.99;
+    	                break;
+    	            case 3:
+    	                picasVeids = "Vistas";
+    	                cena += 6.49;
+    	                break;
+    	            case 4:
+    	                picasVeids = "Ham & Mushroom";
+    	                cena += 6.99;
+    	                break;
+    	            case 5:
+    	                picasVeids = "Ināras Īpašā";
+    	                cena += 9.99;
+    	                break;
+    	            }
+    	            
+    	            switch(picasIzmeri.getSelectedIndex()) {
+    	            case 0:
+    	                izmers = 20;
+    	                break;
+    	            case 1:
+    	                izmers = 30;
+    	                cena += 2;
+    	                break;
+    	            case 2:
+    	                izmers = 45;
+    	                cena += 5;
+    	                break;
+    	            default:
+    	                break;
+    	            }
+    	            
+    	            if (picasCombo.getSelectedIndex() != 0) {
+    	                if (garozaPilngraudu.isSelected()) {
+    	                    PicerijasDarbinieks.garoza = "Pilngraudu";
+    	                    cena += 0.50;
+    	                } else {
+    	                    PicerijasDarbinieks.garoza = "Parastā";
+    	                }
+    	            }
+    	            
+    	            for (int i = 0; i < piedevas.size(); i++) {
+    	                if (piedevas.get(i).isSelected()) {
+    	                    cena += 1.00;
+    	                    picasPiedevas += piedevasVardi[i] + ", ";
+    	                }
+    	            }
+    	            
+    	            switch(dzerieniCombo.getSelectedIndex()) {
+    	            case 0:
+    	                dzeriens = "Bez dzēriena";
+    	                break;
+    	            case 1:
+    	                dzeriens = "Pepsi 500ml";
+    	                cena += 1.49;
+    	                break;
+    	            case 2:
+    	                dzeriens = "Coca-Cola 500ml";
+    	                cena += 1.49;
+    	                break;
+    	            case 3:
+    	                dzeriens = "Fanta 500ml";
+    	                cena += 1.49;
+    	                break;
+    	            case 4:
+    	                dzeriens = "Sprite 500ml";
+    	                cena += 1.49;
+    	                break;
+    	            }
+    	            
+    	            switch(uzkodasCombo.getSelectedIndex()) {
+    	            case 0:
+    	                uzkoda = "Bez uzkodām";
+    	                break;
+    	            case 1:
+    	                uzkoda = "Frī kartupeļi";
+    	                cena += 1.99;
+    	                break;
+    	            case 2:
+    	                uzkoda = "Sīpolu gredzeni";
+    	                cena += 2.59;
+    	                break;
+    	            case 3:
+    	                uzkoda = "Vistas nageti 8gab.";
+    	                cena += 3.19;
+    	                break;
+    	            }
+    	            
+    	            vards = vardaLodzins.getText();
+    	            
+    	            piegade = piegadeOption.isSelected();
+    	            if (piegadeOption.isSelected()) {
+    	                cena += 5.99;
+    	            }
+    	            
+    	            talrNr = talrunisLodzins.getText();
+    	            
+    	            adrese = adreseLodzins.getText();
+    	            
+    	            pasutijumi.add(new Pasutijums(ID, picasVeids, izmers, PicerijasDarbinieks.garoza, picasPiedevas, dzeriens, uzkoda, vards, piegade, talrNr, adrese, cena));
+    	            JOptionPane.showMessageDialog(null, "Cena: " + df.format(cena) + "€");
+    	            noformetPasutijumu.setEnabled(false);
+    	            registretPoga.setEnabled(true);
+    	            setElementi("");
+    	            saturaPanel.removeAll();
+    	            saturaPanel.revalidate();
+    	            saturaPanel.repaint();
     	        }
-    	    	
     	    });
     	    
     	    break;
     	case "apskatit":
-    		
-    		break;
+    	    JLabel pasutijums = new JLabel();
+    	    String pasTxt = "";
+    	    
+    	    if (pasutijumi.isEmpty()) {
+    	        pasTxt = "Nav pasūtījumu.";
+    	    } else {
+    	        Pasutijums[] pasArray = pasutijumi.toArray(new Pasutijums[0]);
+    	        for (int i = 0; i < pasArray.length; i++) {
+    	            Pasutijums p = pasArray[i];
+    	            pasTxt += "Pasūtījums #" + p.getID() + "\n";
+    	            pasTxt += "Klients: " + p.getVards() + "\n";
+    	            pasTxt += "Pica: " + p.getPicasVeids() + " (" + p.getIzmers() + "cm)\n";
+    	            if (p.getGaroza() != null) {
+    	                pasTxt += "Garoza: " + p.getGaroza() + "\n";
+    	            }
+    	            if (p.getPicasPiedevas() != null) {
+    	                pasTxt += "Piedevas: " + p.getPicasPiedevas() + "\n";
+    	            }
+    	            pasTxt += "Dzēriens: " + p.getDzeriens() + "\n";
+    	            pasTxt += "Uzkoda: " + p.getUzkoda() + "\n";
+    	            pasTxt += "Piegāde: " + (p.isPiegade() ? "Jā" : "Nē") + "\n";
+    	            if (p.isPiegade()) {
+    	                pasTxt += "Tālrunis: " + p.getTalrNr() + "\n";
+    	                pasTxt += "Adrese: " + p.getAdrese() + "\n";
+    	            }
+    	            pasTxt += "Cena: " + df.format(p.getCena()) + "€\n";
+    	            pasTxt += "\n─────────────────────\n\n";
+    	        }
+    	    }
+    	    
+    	    pasutijums.setText("<html><pre>" + pasTxt + "</pre></html>");
+    	    pasutijums.setBounds(20, 20, 580, 800);
+    	    pasutijums.setVerticalAlignment(SwingConstants.TOP);
+    	    saturaPanel.add(pasutijums);
+    	    break;
     	default:
     		
     		break;
