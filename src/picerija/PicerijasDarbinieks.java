@@ -86,7 +86,7 @@ public class PicerijasDarbinieks {
     static JPanel saturaPanel;
     
     static String[] picasPath = {"", "atteli/salami.png", "atteli/skinka.png", "atteli/vistas.png", "atteli/hamMushroom.png", "atteli/inarasIpasa.png"};
-    static ImageIcon[] picasBildes; // bildes tiek ielādētas startupā
+    static ImageIcon[] picasBildes;
     
     static String[] dzerieniPath = {"", "atteli/pepsi.png", "atteli/coke.png", "atteli/fanta.png", "atteli/sprite.png"};
     static ImageIcon[] dzerieniBildes;
@@ -98,29 +98,78 @@ public class PicerijasDarbinieks {
     static String[] piedevasVardi = {"Siers", "Tomāti", "Sēnes", "Gurķi", "Paprika"};
    
     static JScrollPane ritinamaZona;
+    static ImageIcon bgIcon;
     
-    // sariktē bildes pēc izmēriem sākumā
+    // Helper method to load images from resources
+    private static ImageIcon loadImageIcon(String path) {
+        try {
+            // Try with leading slash first (for resources in JAR)
+            java.net.URL imgURL = PicerijasDarbinieks.class.getResource("/" + path);
+            
+            // If not found, try without leading slash (relative to class)
+            if (imgURL == null) {
+                imgURL = PicerijasDarbinieks.class.getClassLoader().getResource(path);
+            }
+            
+            // If still not found, try as a file (for development)
+            if (imgURL == null) {
+                java.io.File file = new java.io.File(path);
+                if (file.exists()) {
+                    return new ImageIcon(path);
+                }
+            }
+            
+            if (imgURL != null) {
+                return new ImageIcon(imgURL);
+            } else {
+                System.err.println("Couldn't find file: " + path);
+                System.err.println("Tried: /" + path + " and " + path);
+                return new ImageIcon(); // Return empty icon
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading image: " + path);
+            e.printStackTrace();
+            return new ImageIcon();
+        }
+    }
+    
+    // Load and scale images at startup
     public static void loadImages() {
         picasBildes = new ImageIcon[picasPath.length];
         for (int i = 0; i < picasPath.length; i++) {
-            ImageIcon icon = new ImageIcon(picasPath[i]);
-            Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
-            picasBildes[i] = new ImageIcon(img);
+            if (picasPath[i].isEmpty()) {
+                picasBildes[i] = new ImageIcon();
+            } else {
+                ImageIcon icon = loadImageIcon(picasPath[i]);
+                Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+                picasBildes[i] = new ImageIcon(img);
+            }
         }
         
         dzerieniBildes = new ImageIcon[dzerieniPath.length];
         for (int i = 0; i < dzerieniPath.length; i++) {
-        	ImageIcon icon = new ImageIcon(dzerieniPath[i]);
-        	Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
-        	dzerieniBildes[i] = new ImageIcon(img);
+            if (dzerieniPath[i].isEmpty()) {
+                dzerieniBildes[i] = new ImageIcon();
+            } else {
+                ImageIcon icon = loadImageIcon(dzerieniPath[i]);
+                Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+                dzerieniBildes[i] = new ImageIcon(img);
+            }
         }
         
         uzkodasBildes = new ImageIcon[uzkodasPath.length];
         for (int i = 0; i < uzkodasPath.length; i++) {
-        	ImageIcon icon = new ImageIcon(uzkodasPath[i]);
-        	Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
-        	uzkodasBildes[i] = new ImageIcon(img);
+            if (uzkodasPath[i].isEmpty()) {
+                uzkodasBildes[i] = new ImageIcon();
+            } else {
+                ImageIcon icon = loadImageIcon(uzkodasPath[i]);
+                Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+                uzkodasBildes[i] = new ImageIcon(img);
+            }
         }
+        
+        // Load background image
+        bgIcon = loadImageIcon("atteli/bg.png");
     }
     
     public static void saglabatPasutijumus() {
@@ -141,7 +190,7 @@ public class PicerijasDarbinieks {
         try (BufferedReader reader = new BufferedReader(new FileReader(failaNosaukums))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] pasutijumaDetalas = line.split("\n|");
+                String[] pasutijumaDetalas = line.split("\\|");
                 if (pasutijumaDetalas.length == 12) {
                     int id = Integer.parseInt(pasutijumaDetalas[0]);
                     String picasVeids = pasutijumaDetalas[1];
@@ -180,14 +229,12 @@ public class PicerijasDarbinieks {
             }
         }
         panelis.setPreferredSize(new Dimension(panelis.getWidth(), maxBottom + 20));
-        // atjauno scroll bar
         panelis.revalidate();
         panelis.repaint();
     }
     
     static void setElementi(String nosaukums) {
     	
-    	// piekļust jpanel lodziņam, kurš saturēs elementus tajā
         saturaPanel = (JPanel) ritinamaZona.getViewport().getView();
         
         saturaPanel.removeAll();
@@ -212,7 +259,7 @@ public class PicerijasDarbinieks {
     	        private static final long serialVersionUID = 1L;
 
     	        @Override
-    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta no interneta!
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     	            
     	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     	            
@@ -342,7 +389,7 @@ public class PicerijasDarbinieks {
     	        private static final long serialVersionUID = 1L;
 
     	        @Override
-    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta no interneta!
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     	            
     	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     	            
@@ -377,7 +424,7 @@ public class PicerijasDarbinieks {
     	        private static final long serialVersionUID = 1L;
 
     	        @Override
-    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) { // šī koda daļa ir iegūta no interneta!
+    	        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     	            
     	            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     	            
@@ -456,6 +503,8 @@ public class PicerijasDarbinieks {
     	        @Override
     	        public void actionPerformed(ActionEvent e) {
     	            ID++;
+    	            cena = 0; // Reset price
+    	            picasPiedevas = ""; // Reset toppings
     	            
     	            switch(picasCombo.getSelectedIndex()) {
     	            case 0:
@@ -567,6 +616,7 @@ public class PicerijasDarbinieks {
     	            adrese = adreseLodzins.getText();
     	            
     	            pasutijumi.add(new Pasutijums(ID, picasVeids, izmers, PicerijasDarbinieks.garoza, picasPiedevas, dzeriens, uzkoda, vards, piegade, talrNr, adrese, cena));
+    	            saglabatPasutijumus();
     	            JOptionPane.showMessageDialog(null, "Cena: " + df.format(cena) + "€");
     	            noformetPasutijumu.setEnabled(false);
     	            registretPoga.setEnabled(true);
@@ -627,7 +677,7 @@ public class PicerijasDarbinieks {
     	        saturaPanel.add(nav);
     	    } else {
     	        int yPos = 80;
-    	        Pasutijums[] pasMas = pasutijumi.toArray(new Pasutijums[0]); // pārveido masīvā lai varētu vieglāk printēt
+    	        Pasutijums[] pasMas = pasutijumi.toArray(new Pasutijums[0]);
     	        
     	        for (int i = 0; i < pasMas.length; i++) {
     	            Pasutijums pas = pasMas[i];
@@ -699,7 +749,7 @@ public class PicerijasDarbinieks {
         scrollPane.setBounds(330, 190, 620, 450);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(10); // tīšanas intervāls
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
         
         return scrollPane;
     }
@@ -709,17 +759,19 @@ public class PicerijasDarbinieks {
 		UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		
 		loadImages();
+		ieladetPasutijumus();
 		
 		logs = new JFrame("Picērija");
 		logs.setSize(1024, 768);
 		logs.setLocationRelativeTo(null);
 		logs.setDefaultCloseOperation(3);
 		logs.setResizable(false);
-		logs.setIconImage(new ImageIcon("atteli/icon.png").getImage().getScaledInstance(-1, -1, Image.SCALE_SMOOTH));
 		
-		ImageIcon bg = new ImageIcon("atteli/bg.png");
-		int bildeWidth = bg.getIconWidth();
-		x2 = bildeWidth; // nākamās bildes x vērtība
+		ImageIcon iconImg = loadImageIcon("atteli/icon.png");
+		logs.setIconImage(iconImg.getImage());
+
+		int bildeWidth = bgIcon.getIconWidth();
+		x2 = bildeWidth;
 		
 		JPanel bground = new JPanel();
         bground.setLayout(null);
@@ -799,14 +851,15 @@ public class PicerijasDarbinieks {
         exitPoga.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				saglabatPasutijumus();
 				System.exit(0);
 			}
         });
         
-		JLabel bgBilde1 = new JLabel(bg);
+		JLabel bgBilde1 = new JLabel(bgIcon);
         bgBilde1.setBounds(x1, 0, bildeWidth, 768);
         
-        JLabel bgBilde2 = new JLabel(bg);
+        JLabel bgBilde2 = new JLabel(bgIcon);
         bgBilde2.setBounds(x2, 0, bildeWidth, 768);
         
         JButton bgBlock = new JButton();
@@ -834,7 +887,6 @@ public class PicerijasDarbinieks {
         
         logs.add(bground);
         
-        //TAIMERA KODS
         Timer timer = new Timer(20, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -854,8 +906,6 @@ public class PicerijasDarbinieks {
             }
         });
 		
-		
-		//logs.setUndecorated(true);
 		logs.setVisible(true);
 		timer.start();
 		
@@ -864,6 +914,7 @@ public class PicerijasDarbinieks {
 
 			@Override
 		    public void actionPerformed(ActionEvent e) {
+				saglabatPasutijumus();
 		        System.exit(0);
 		    }
 		};
