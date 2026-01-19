@@ -24,6 +24,7 @@ import java.util.Random;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -612,6 +613,73 @@ public class PicerijasDarbinieks {
     	    pasutijums.setBounds(20, 20, 580, 800);
     	    pasutijums.setVerticalAlignment(SwingConstants.TOP);
     	    saturaPanel.add(pasutijums);
+    	    break;
+    	case "vesture":
+    	    JLabel vestureTitle = new JLabel("Pasūtījumu vēsture");
+    	    vestureTitle.setFont(new Font("Franklin Gothic Medium", Font.BOLD, 24));
+    	    vestureTitle.setBounds(20, 20, 400, 40);
+    	    saturaPanel.add(vestureTitle);
+    	    
+    	    if (pasutijumi.isEmpty()) {
+    	        JLabel nav = new JLabel("Nav pasūtījumu vēsturē.");
+    	        nav.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 16));
+    	        nav.setBounds(20, 80, 400, 30);
+    	        saturaPanel.add(nav);
+    	    } else {
+    	        int yPos = 80;
+    	        Pasutijums[] pasMas = pasutijumi.toArray(new Pasutijums[0]); // pārveido masīvā lai varētu vieglāk printēt
+    	        
+    	        for (int i = 0; i < pasMas.length; i++) {
+    	            Pasutijums pas = pasMas[i];
+    	            
+    	            JPanel pasPanelis = new JPanel();
+    	            pasPanelis.setLayout(null);
+    	            pasPanelis.setBounds(20, yPos, 560, 200);
+    	            pasPanelis.setBackground(Color.WHITE);
+    	            pasPanelis.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
+    	            
+    	            JLabel idTeksts = new JLabel("Pasūtījums #" + pas.getID());
+    	            idTeksts.setFont(new Font("Franklin Gothic Medium", Font.BOLD, 18));
+    	            idTeksts.setBounds(10, 10, 300, 25);
+    	            pasPanelis.add(idTeksts);
+    	            
+    	            JLabel klientsTxt = new JLabel("Klients: " + pas.getVards());
+    	            klientsTxt.setBounds(10, 40, 300, 20);
+    	            pasPanelis.add(klientsTxt);
+    	            
+    	            JLabel picaTeksts = new JLabel("Pica: " + pas.getPicasVeids() + " (" + pas.getIzmers() + "cm)");
+    	            picaTeksts.setBounds(10, 60, 400, 20);
+    	            pasPanelis.add(picaTeksts);
+    	            
+    	            if (pas.getGaroza() != null && !pas.getGaroza().isEmpty()) {
+    	                JLabel garozaLabel = new JLabel("Garoza: " + pas.getGaroza());
+    	                garozaLabel.setBounds(10, 80, 300, 20);
+    	                pasPanelis.add(garozaLabel);
+    	            }
+    	            
+    	            if (pas.getPicasPiedevas() != null && !pas.getPicasPiedevas().isEmpty()) {
+    	                JLabel piedevasTeksts = new JLabel("Piedevas: " + pas.getPicasPiedevas());
+    	                piedevasTeksts.setBounds(10, 100, 540, 20);
+    	                pasPanelis.add(piedevasTeksts);
+    	            }
+    	            
+    	            JLabel dzeriensTeksts = new JLabel("Dzēriens: " + pas.getDzeriens());
+    	            dzeriensTeksts.setBounds(10, 120, 300, 20);
+    	            pasPanelis.add(dzeriensTeksts);
+    	            
+    	            JLabel uzkodaTex = new JLabel("Uzkoda: " + pas.getUzkoda());
+    	            uzkodaTex.setBounds(10, 140, 300, 20);
+    	            pasPanelis.add(uzkodaTex);
+    	            
+    	            JLabel cenaT = new JLabel("Cena: " + df.format(pas.getCena()) + "€");
+    	            cenaT.setFont(new Font("Franklin Gothic Medium", Font.BOLD, 16));
+    	            cenaT.setBounds(400, 160, 150, 25);
+    	            pasPanelis.add(cenaT);
+    	            
+    	            saturaPanel.add(pasPanelis);
+    	            yPos += 220;
+    	        }
+    	    }
     	    break;
     	default:
     		
