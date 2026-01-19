@@ -5,8 +5,8 @@ public class Pasutijums {
 	int ID;
 	String picasVeids;
 	int izmers;
-	boolean parastaGaroza;
-	String[] piedevas;
+	String garoza;
+	String piedevas;
 	String dzeriens;
 	String uzkoda;
 	String vards;
@@ -15,10 +15,10 @@ public class Pasutijums {
 	String adrese;
 	double cena;
 	
-	public Pasutijums(int ID, String picasVeids, int izmers, boolean parastaGaroza, String[] piedevas, String dzeriens, String uzkoda, String vards, boolean piegade, String talrNr, String adrese, double cena) {
+	public Pasutijums(int ID, String picasVeids, int izmers, String garoza, String piedevas, String dzeriens, String uzkoda, String vards, boolean piegade, String talrNr, String adrese, double cena) {
 		this.picasVeids = picasVeids;
 		this.izmers = izmers;
-		this.parastaGaroza = parastaGaroza;
+		this.garoza = garoza;
 		this.piedevas = piedevas;
 		this.dzeriens = dzeriens;
 		this.uzkoda = uzkoda;

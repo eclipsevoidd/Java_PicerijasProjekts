@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -57,6 +58,7 @@ public class PicerijasDarbinieks {
     static String picasVeids;
     static String garoza;
     static String dzeriens;
+    static String picasPiedevas;
     static String uzkoda;
     static String vards;
     static String talrNr;
@@ -81,6 +83,7 @@ public class PicerijasDarbinieks {
     static ImageIcon[] uzkodasBildes;
     
     static String[] izmeri = {"20cm ⌀", "30cm ⌀", "45cm ⌀"};
+    static String[] piedevasVardi = {"Siers", "Tomāti", "Sēnes", "Gurķi", "Paprika"};
    
     static JScrollPane ritinamaZona;
     
@@ -214,7 +217,7 @@ public class PicerijasDarbinieks {
     	    siersPiedeva.setEnabled(false);
     	    siersPiedeva.setBounds(20, 285, 80, 50);
     	    
-    	    JCheckBox tomatiPiedeva = new JCheckBox("Tomāti – 0.50€");
+    	    JCheckBox tomatiPiedeva = new JCheckBox("Tomāti – 1€");
     	    tomatiPiedeva.setEnabled(false);
     	    tomatiPiedeva.setBounds(120, 285, 110, 50);
     	    
@@ -222,11 +225,11 @@ public class PicerijasDarbinieks {
     	    senesPiedeva.setEnabled(false);
     	    senesPiedeva.setBounds(240, 285, 90, 50);
     	    
-    	    JCheckBox gurkiPiedeva = new JCheckBox("Gurķi – 0.70€");
+    	    JCheckBox gurkiPiedeva = new JCheckBox("Gurķi – 1€");
     	    gurkiPiedeva.setEnabled(false);
     	    gurkiPiedeva.setBounds(340, 285, 100, 50);
     	    
-    	    JCheckBox paprikaPiedeva = new JCheckBox("Paprika – 1.50€");
+    	    JCheckBox paprikaPiedeva = new JCheckBox("Paprika – 1€");
     	    paprikaPiedeva.setEnabled(false);
     	    paprikaPiedeva.setBounds(460, 285, 120, 50);
     	    
@@ -348,7 +351,7 @@ public class PicerijasDarbinieks {
     	    vardaLodzins.setBounds(20, 545, 200, 30);
     	    saturaPanel.add(vardaLodzins);
     	    
-    	    JCheckBox piegadeOption = new JCheckBox("Piegādāt uz mājām?");
+    	    JCheckBox piegadeOption = new JCheckBox("Piegādāt uz mājām? (+ 5.99€)");
     	    piegadeOption.setBounds(20, 575, 135, 50);
     	    saturaPanel.add(piegadeOption);
     	    
@@ -440,8 +443,45 @@ public class PicerijasDarbinieks {
     	    			}
     	    		}
     	    		
-    	    		//pasutijumi.add(new Pasutijums(ID, picasVeids, izmers, PicerijasDarbinieks.garoza));
+    	    		for (int i = 0; i < piedevas.size(); i++) {
+    	    			if (piedevas.get(i).isSelected()) {
+    	    				cena += 1.00;
+    	    				picasPiedevas += piedevasVardi[i] + ", ";
+    	    			}
+    	    		}
+    	    		
+    	    		dzeriens = dzerieniCombo.getSelectedItem().toString();
+    	    		if (dzerieniCombo.getSelectedIndex() != 0) {
+    	    			cena += 1.49;
+    	    		}
+    	    		
+    	    		uzkoda = uzkodasCombo.getSelectedItem().toString();
+    	    		
+    	    		switch(uzkodasCombo.getSelectedIndex()) {
+    	    		case 1:
+    	    			cena += 1.99;
+    	    		case 2:
+    	    			cena += 2.59;
+    	    		case 3:
+    	    			cena += 3.19;
+    	    		}
+    	    		
+    	    		vards = vardaLodzins.getText();
+    	    		
+    	    		piegade = piegadeOption.isSelected();
+    	    		if (piegadeOption.isSelected()) {
+    	    			cena += 5.99;
+    	    		}
+    	    		
+    	    		talrNr = talrunisLodzins.getText();
+    	    		
+    	    		adrese = adreseLodzins.getText();
+    	    		
+    	    		pasutijumi.add(new Pasutijums(ID, picasVeids, izmers, PicerijasDarbinieks.garoza, picasPiedevas, dzeriens, uzkoda, vards, piegade, talrNr, adrese, cena));
     	    		noformetPasutijumu.setEnabled(false);
+    	    		apskatitPoga.setEnabled(false);
+    	    		registretPoga.setEnabled(true);
+    	    		setElementi("pasutijumi");
     	        }
     	    	
     	    });
